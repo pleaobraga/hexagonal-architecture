@@ -6,6 +6,7 @@ export interface ProductInterface {
   getStatus: () => string
   getName: () => string
   getPrice: () => number
+  updatePrice: (price: number) => void
 }
 
 const STATUS = {
@@ -28,6 +29,26 @@ export class Product implements ProductInterface {
   }
 
   isValid = () => {
+    if (!this._status) {
+      this._status = STATUS.DISABLED
+    }
+
+    if (this._status !== STATUS.DISABLED && this._status !== STATUS.ENABLED) {
+      throw new Error('The status must be enabled or disabled')
+    }
+
+    if (!this._price || this._price < 0) {
+      throw new Error('The price must be greater or equal to zero')
+    }
+
+    if (!this._name) {
+      throw new Error('The name cannot be empty')
+    }
+
+    if (!this._id) {
+      throw new Error('The id cannot be empty')
+    }
+
     return true
   }
 
@@ -43,6 +64,10 @@ export class Product implements ProductInterface {
 
   disabled = () => {
     this._status = STATUS.DISABLED
+  }
+
+  updatePrice = (price: number) => {
+    this._price = price
   }
 
   getId = () => this._id
