@@ -1,9 +1,4 @@
-export interface ProductInterface {
-  isValid: () => boolean
-  enable: () => void
-  disabled: () => void
-  updatePrice: (price: number) => void
-}
+import { ProductInterface } from "./product.interface"
 
 const STATUS = {
   DISABLED: 'disabled',
@@ -73,7 +68,7 @@ export class Product implements ProductInterface {
   get status() {
     return this._status
   }
-  
+
   get name() {
     return this._name
   }
