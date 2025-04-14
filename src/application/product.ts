@@ -2,10 +2,6 @@ export interface ProductInterface {
   isValid: () => boolean
   enable: () => void
   disabled: () => void
-  getId: () => string
-  getStatus: () => string
-  getName: () => string
-  getPrice: () => number
   updatePrice: (price: number) => void
 }
 
@@ -28,7 +24,7 @@ export class Product implements ProductInterface {
     this.isValid()
   }
 
-  isValid = () => {
+  isValid() {
     if (!this._status) {
       this._status = STATUS.DISABLED
     }
@@ -52,7 +48,7 @@ export class Product implements ProductInterface {
     return true
   }
 
-  enable = () => {
+  enable() {
     if (this._price === 0) {
       throw new Error(
         'The price must be greater than zero to enable the product'
@@ -62,16 +58,27 @@ export class Product implements ProductInterface {
     this._status = STATUS.ENABLED
   }
 
-  disabled = () => {
+  disabled() {
     this._status = STATUS.DISABLED
   }
 
-  updatePrice = (price: number) => {
+  updatePrice(price: number) {
     this._price = price
   }
 
-  getId = () => this._id
-  getStatus = () => this._status
-  getName = () => this._name
-  getPrice = () => this._price
+  get id() {
+    return this._id
+  }
+
+  get status() {
+    return this._status
+  }
+  
+  get name() {
+    return this._name
+  }
+
+  get price() {
+    return this._price
+  }
 }

@@ -6,7 +6,7 @@ describe('Product', () => {
 
     product.enable()
 
-    expect(product.getStatus()).toBe('enabled')
+    expect(product.status).toBe('enabled')
   })
 
   it('Should not be able to enable a product', () => {
@@ -23,7 +23,7 @@ describe('Product', () => {
     product.enable()
     product.disabled()
 
-    expect(product.getStatus()).toBe('disabled')
+    expect(product.status).toBe('disabled')
   })
 
   it('should return true for a valid product', () => {
@@ -58,21 +58,21 @@ describe('Product', () => {
 
   it('should return the correct id', () => {
     const product = new Product('123', 'Test Product', 99)
-    expect(product.getId()).toBe('123')
+    expect(product.id).toBe('123')
   })
 
   it('should return the correct name', () => {
     const product = new Product('123', 'Test Product', 99)
-    expect(product.getName()).toBe('Test Product')
+    expect(product.name).toBe('Test Product')
   })
 
   it('should return the correct price', () => {
     const product = new Product('123', 'Test Product', 99)
-    expect(product.getPrice()).toBe(99)
+    expect(product.price).toBe(99)
   })
 
   it('should return the default status as disabled', () => {
     const product = new Product('123', 'Test Product', 99)
-    expect(product.getStatus()).toBe('disabled')
+    expect(product.status).toBe('disabled')
   })
 })
