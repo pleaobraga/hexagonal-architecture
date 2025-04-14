@@ -55,4 +55,24 @@ describe('Product', () => {
       'The status must be enabled or disabled'
     )
   })
+
+  it('should return the correct id', () => {
+    const product = new Product('123', 'Test Product', 99)
+    expect(product.getId()).toBe('123')
+  })
+
+  it('should return the correct name', () => {
+    const product = new Product('123', 'Test Product', 99)
+    expect(product.getName()).toBe('Test Product')
+  })
+
+  it('should return the correct price', () => {
+    const product = new Product('123', 'Test Product', 99)
+    expect(product.getPrice()).toBe(99)
+  })
+
+  it('should return the default status as disabled', () => {
+    const product = new Product('123', 'Test Product', 99)
+    expect(product.getStatus()).toBe('disabled')
+  })
 })
