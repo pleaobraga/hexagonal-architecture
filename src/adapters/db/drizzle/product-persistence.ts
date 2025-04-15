@@ -27,9 +27,9 @@ export class ProductPersistence implements ProductPersistenceInterface {
       .where(eq(schema.products.id, Number(id)))
       .limit(1)
 
-    const row = result[0]
+    if (result.length !== 1) throw new Error('Product not found')
 
-    if (!row) throw new Error('Product not found')
+    const row = result[0]
 
     return new Product(row.id.toString(), row.name, row.price, row.status)
   }
@@ -50,14 +50,16 @@ export class ProductPersistence implements ProductPersistenceInterface {
           status: product.status
         })
         .where(eq(schema.products.id, Number(product.id)))
-    } else {
-      await this.db.insert(schema.products).values({
-        id: Number(product.id),
-        name: product.name,
-        price: product.price,
-        status: product.status
-      })
+
+      return product
     }
+
+    await this.db.insert(schema.products).values({
+      id: Number(product.id),
+      name: product.name,
+      price: product.price,
+      status: product.status
+    })
 
     return product
   }
