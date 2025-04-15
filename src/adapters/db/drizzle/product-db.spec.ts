@@ -2,7 +2,7 @@ import { drizzle } from 'drizzle-orm/better-sqlite3'
 import Database from 'better-sqlite3'
 import { eq } from 'drizzle-orm'
 import { products } from './schema'
-import { ProductPersistence } from './product-persistence'
+import { ProductDB } from './product-db'
 import { Product } from '../../../application/product'
 
 // Utility: create fresh in-memory db for each test
@@ -11,13 +11,13 @@ function createTestDb() {
   return drizzle(sqlite, { schema: { products } })
 }
 
-describe('ProductPersistence', () => {
+describe('Product DB', () => {
   let db: ReturnType<typeof createTestDb>
-  let repo: ProductPersistence
+  let repo: ProductDB
 
   beforeEach(async () => {
     db = createTestDb()
-    repo = new ProductPersistence(db)
+    repo = new ProductDB(db)
 
     await db.run(`
         CREATE TABLE products (
@@ -41,7 +41,7 @@ describe('ProductPersistence', () => {
 
   it('should update an existing product using save()', async () => {
     await db.insert(products).values({
-      id: 1,
+      id: "1",
       name: 'Old',
       price: 50,
       status: 'disabled'
@@ -50,7 +50,7 @@ describe('ProductPersistence', () => {
     const product = new Product('1', 'Updated', 150, 'enabled')
     await repo.save(product)
 
-    const updated = await db.select().from(products).where(eq(products.id, 1))
+    const updated = await db.select().from(products).where(eq(products.id, "1"))
     expect(updated[0].name).toBe('Updated')
     expect(updated[0].price).toBe(150)
     expect(updated[0].status).toBe('enabled')
@@ -60,14 +60,14 @@ describe('ProductPersistence', () => {
     const product = new Product('2', 'Inserted Product', 200)
     await repo.insert(product)
 
-    const result = await db.select().from(products).where(eq(products.id, 2))
+    const result = await db.select().from(products).where(eq(products.id, "2"))
     expect(result.length).toBe(1)
     expect(result[0].name).toBe('Inserted Product')
   })
 
   it('should update a product using update()', async () => {
     await db.insert(products).values({
-      id: 3,
+      id: "3",
       name: 'To be updated',
       price: 90,
       status: 'disabled'
@@ -76,7 +76,7 @@ describe('ProductPersistence', () => {
     const product = new Product('3', 'Now Updated', 120, 'enabled')
     await repo.update(product)
 
-    const result = await db.select().from(products).where(eq(products.id, 3))
+    const result = await db.select().from(products).where(eq(products.id, "3"))
     expect(result[0].name).toBe('Now Updated')
     expect(result[0].price).toBe(120)
     expect(result[0].status).toBe('enabled')
@@ -84,7 +84,7 @@ describe('ProductPersistence', () => {
 
   it('should return product from get()', async () => {
     await db.insert(products).values({
-      id: 4,
+      id: "4",
       name: 'Get This',
       price: 80,
       status: 'enabled'
@@ -102,7 +102,7 @@ describe('ProductPersistence', () => {
 
   it('should return row from getById()', async () => {
     await db.insert(products).values({
-      id: 5,
+      id: "5",
       name: 'Row Only',
       price: 60,
       status: 'enabled'

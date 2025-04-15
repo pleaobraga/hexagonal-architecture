@@ -17,14 +17,14 @@ type DrizzleDB = {
   [key: string]: any
 }
 
-export class ProductPersistence implements ProductPersistenceInterface {
+export class ProductDB implements ProductPersistenceInterface {
   constructor(private readonly db: DrizzleDB) {}
 
   async getById(id: string): Promise<any[]> {
     const result = await this.db
       .select()
       .from(schema.products)
-      .where(eq(schema.products.id, Number(id)))
+      .where(eq(schema.products.id, id))
       .limit(1)
 
     return result
@@ -48,7 +48,7 @@ export class ProductPersistence implements ProductPersistenceInterface {
         price: product.price,
         status: product.status
       })
-      .where(eq(schema.products.id, Number(product.id)))
+      .where(eq(schema.products.id, product.id))
   }
 
   async insert(product: ProductInterface): Promise<void> {

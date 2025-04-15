@@ -1,8 +1,8 @@
 import { drizzle } from 'drizzle-orm/node-postgres'
 import { Pool } from 'pg'
 
-import * as schema from '../schema'
-import { env } from '../../../../env'
+import * as schema from './schema'
+import { env } from '../../../env'
 
 // Initialize PostgreSQL pool connection
 export const client = new Pool({
@@ -10,3 +10,5 @@ export const client = new Pool({
 })
 
 export const db = drizzle(client, { schema, logger: env.ENV === 'dev' })
+
+
