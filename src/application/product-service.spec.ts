@@ -1,74 +1,64 @@
-import { Product } from './product'
 import { ProductService } from './product-service'
+import {
+  ProductInterface,
+  ProductPersistenceInterface
+} from './product.interface'
+
+// Mocked product for testing
+const mockProduct = {
+  id: '1',
+  name: 'Test Product',
+  price: 100,
+  status: 'enabled',
+  isValid: jest.fn().mockReturnValue(true),
+  enable: jest.fn(),
+  disabled: jest.fn(),
+  updatePrice: jest.fn()
+} as unknown as ProductInterface
+
+// Mock persistence layer
+const persistenceMock: ProductPersistenceInterface = {
+  get: jest.fn().mockResolvedValue(mockProduct),
+  save: jest.fn().mockResolvedValue(undefined)
+}
 
 describe('ProductService', () => {
-  it('should get a product by id', () => {
-    const mockPersistence = {
-      get: jest
-        .fn()
-        .mockReturnValue({ id: '1', name: 'Test Product', price: 100 }),
-      save: jest.fn()
-    }
-    const productService = new ProductService(mockPersistence)
-    const product = productService.get('1')
-    expect(product).toEqual({ id: '1', name: 'Test Product', price: 100 })
-    expect(mockPersistence.get).toHaveBeenCalledWith('1')
+  let service: ProductService
+
+  beforeEach(() => {
+    service = new ProductService(persistenceMock)
+    jest.clearAllMocks()
   })
 
-  it('should create a new product', () => {
-    const newProduct = new Product('1', 'Test Product', 100)
-
-    const mockPersistence = {
-      get: jest.fn(),
-      save: jest
-        .fn()
-        .mockReturnValue({ id: '1', name: 'Test Product', price: 100 })
-    }
-    const productService = new ProductService(mockPersistence)
-    const product = productService.create('1', 'Test Product', 100)
-    expect(product).toEqual({ id: '1', name: 'Test Product', price: 100 })
-    expect(mockPersistence.save).toHaveBeenCalledWith(newProduct)
+  it('should get a product by id', async () => {
+    const product = await service.get('1')
+    expect(persistenceMock.get).toHaveBeenCalledWith('1')
+    expect(product.id).toBe('1')
   })
 
-  it('should enable a product', () => {
-    const mockProduct = {
-      isValid: jest.fn(),
-      enable: jest.fn(),
-      disabled: jest.fn(),
-      updatePrice: jest.fn()
-    }
+  it('should throw if product not found', async () => {
+    ;(persistenceMock.get as jest.Mock).mockResolvedValueOnce(null)
 
-    const mockPersistence = {
-      get: jest.fn(),
-      save: jest
-        .fn()
-        .mockReturnValue({ id: '1', name: 'Test Product', price: 100 })
-    }
-    const productService = new ProductService(mockPersistence)
-    const product = productService.enable(mockProduct)
-    expect(product).toEqual({ id: '1', name: 'Test Product', price: 100 })
+    await expect(service.get('404')).rejects.toThrow('Product not found')
+  })
+
+  it('should create a new product', async () => {
+    const product = await service.create('2', 'New Product', 200)
+    expect(product.id).toBe('2')
+    expect(persistenceMock.save).toHaveBeenCalledWith(product)
+  })
+
+  it('should enable a product and save it', async () => {
+    const result = await service.enable(mockProduct)
     expect(mockProduct.enable).toHaveBeenCalled()
-    expect(mockPersistence.save).toHaveBeenCalledWith(mockProduct)
+    expect(persistenceMock.save).toHaveBeenCalledWith(mockProduct)
+    expect(result).toBe(mockProduct)
   })
 
-  it('should disable a product', () => {
-    const mockProduct = {
-      isValid: jest.fn(),
-      enable: jest.fn(),
-      disabled: jest.fn(),
-      updatePrice: jest.fn()
-    }
-
-    const mockPersistence = {
-      get: jest.fn(),
-      save: jest
-        .fn()
-        .mockReturnValue({ id: '1', name: 'Test Product', price: 100 })
-    }
-    const productService = new ProductService(mockPersistence)
-    const product = productService.disabled(mockProduct)
-    expect(product).toEqual({ id: '1', name: 'Test Product', price: 100 })
+  it('should disable a product and save it', async () => {
+    const result = await service.disabled(mockProduct)
     expect(mockProduct.disabled).toHaveBeenCalled()
-    expect(mockPersistence.save).toHaveBeenCalledWith(mockProduct)
+    expect(persistenceMock.save).toHaveBeenCalledWith(mockProduct)
+    expect(result).toBe(mockProduct)
   })
 })

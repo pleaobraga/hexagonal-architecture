@@ -1,25 +1,42 @@
-import { Product } from "./product"
-import { ProductInterface, ProductPersistenceInterface, ProductServiceInterface } from "./product.interface"
+import { Product } from './product'
+import {
+  ProductInterface,
+  ProductPersistenceInterface,
+  ProductServiceInterface
+} from './product.interface'
 
 export class ProductService implements ProductServiceInterface {
   constructor(private readonly persistence: ProductPersistenceInterface) {}
 
-  get(id: string): ProductInterface {
-    return this.persistence.get(id)
+  async get(id: string): Promise<ProductInterface> {
+    const product = await this.persistence.get(id)
+    if (!product) {
+      throw new Error('Product not found')
+    }
+
+    return new Product(product.id, product.name, product.price)
   }
 
-  create(id: string, name: string, price: number): ProductInterface {
+  async create(
+    id: string,
+    name: string,
+    price: number
+  ): Promise<ProductInterface> {
     const product = new Product(id, name, price)
-    return this.persistence.save(product)
+    await this.persistence.save(product)
+
+    return product
   }
 
-  enable(product: ProductInterface): ProductInterface {
+  async enable(product: ProductInterface): Promise<ProductInterface> {
     product.enable()
-    return this.persistence.save(product)
+    await this.persistence.save(product)
+    return product
   }
 
-  disabled(product: ProductInterface): ProductInterface {
+  async disabled(product: ProductInterface): Promise<ProductInterface> {
     product.disabled()
-    return this.persistence.save(product)
+    await this.persistence.save(product)
+    return product
   }
 }
