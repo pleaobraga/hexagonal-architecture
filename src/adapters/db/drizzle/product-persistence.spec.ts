@@ -19,58 +19,97 @@ describe('ProductPersistence', () => {
     db = createTestDb()
     repo = new ProductPersistence(db)
 
-    // Create table manually since we're not using migrations here
-    await db.run(
-      `CREATE TABLE products (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
-        status TEXT NOT NULL,
-        price INTEGER NOT NULL
-      )`
-    )
+    await db.run(`
+        CREATE TABLE products (
+          id INTEGER PRIMARY KEY,
+          name TEXT NOT NULL,
+          status TEXT NOT NULL,
+          price INTEGER NOT NULL
+        )
+      `)
   })
 
-  it('should save a new product', async () => {
-    const product = new Product('1', 'Test Product', 100)
+  it('should insert a new product using save()', async () => {
+    const product = new Product('1', 'New Product', 100)
     const saved = await repo.save(product)
 
     const rows = await db.select().from(products)
     expect(rows.length).toBe(1)
-    expect(rows[0].name).toBe('Test Product')
+    expect(rows[0].name).toBe('New Product')
     expect(saved).toEqual(product)
   })
 
-  it('should update an existing product', async () => {
+  it('should update an existing product using save()', async () => {
     await db.insert(products).values({
       id: 1,
-      name: 'Old Name',
+      name: 'Old',
       price: 50,
       status: 'disabled'
     })
 
-    const product = new Product('1', 'Updated Name', 150, 'enabled')
+    const product = new Product('1', 'Updated', 150, 'enabled')
     await repo.save(product)
 
     const updated = await db.select().from(products).where(eq(products.id, 1))
-    expect(updated[0].name).toBe('Updated Name')
+    expect(updated[0].name).toBe('Updated')
     expect(updated[0].price).toBe(150)
     expect(updated[0].status).toBe('enabled')
   })
 
-  it('should get a product by id', async () => {
+  it('should insert a product using insert()', async () => {
+    const product = new Product('2', 'Inserted Product', 200)
+    await repo.insert(product)
+
+    const result = await db.select().from(products).where(eq(products.id, 2))
+    expect(result.length).toBe(1)
+    expect(result[0].name).toBe('Inserted Product')
+  })
+
+  it('should update a product using update()', async () => {
     await db.insert(products).values({
-      id: 1,
-      name: 'Get Me',
+      id: 3,
+      name: 'To be updated',
+      price: 90,
+      status: 'disabled'
+    })
+
+    const product = new Product('3', 'Now Updated', 120, 'enabled')
+    await repo.update(product)
+
+    const result = await db.select().from(products).where(eq(products.id, 3))
+    expect(result[0].name).toBe('Now Updated')
+    expect(result[0].price).toBe(120)
+    expect(result[0].status).toBe('enabled')
+  })
+
+  it('should return product from get()', async () => {
+    await db.insert(products).values({
+      id: 4,
+      name: 'Get This',
       price: 80,
       status: 'enabled'
     })
 
-    const result = await repo.get('1')
-    expect(result.name).toBe('Get Me')
-    expect(result.price).toBe(80)
+    const product = await repo.get('4')
+    expect(product.name).toBe('Get This')
+    expect(product.price).toBe(80)
+    expect(product.status).toBe('enabled')
   })
 
-  it('should throw if product not found', async () => {
+  it('should throw if get() fails', async () => {
     await expect(repo.get('999')).rejects.toThrow('Product not found')
+  })
+
+  it('should return row from getById()', async () => {
+    await db.insert(products).values({
+      id: 5,
+      name: 'Row Only',
+      price: 60,
+      status: 'enabled'
+    })
+
+    const result = await repo.getById('5')
+    expect(result.length).toBe(1)
+    expect(result[0].name).toBe('Row Only')
   })
 })
