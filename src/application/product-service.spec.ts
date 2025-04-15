@@ -50,4 +50,25 @@ describe('ProductService', () => {
     expect(mockProduct.enable).toHaveBeenCalled()
     expect(mockPersistence.save).toHaveBeenCalledWith(mockProduct)
   })
+
+  it('should disable a product', () => {
+    const mockProduct = {
+      isValid: jest.fn(),
+      enable: jest.fn(),
+      disabled: jest.fn(),
+      updatePrice: jest.fn()
+    }
+
+    const mockPersistence = {
+      get: jest.fn(),
+      save: jest
+        .fn()
+        .mockReturnValue({ id: '1', name: 'Test Product', price: 100 })
+    }
+    const productService = new ProductService(mockPersistence)
+    const product = productService.disabled(mockProduct)
+    expect(product).toEqual({ id: '1', name: 'Test Product', price: 100 })
+    expect(mockProduct.disabled).toHaveBeenCalled()
+    expect(mockPersistence.save).toHaveBeenCalledWith(mockProduct)
+  })
 })
