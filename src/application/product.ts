@@ -1,4 +1,4 @@
-import { ProductInterface } from "./product.interface"
+import { ProductInterface } from './product.interface'
 
 const STATUS = {
   DISABLED: 'disabled',
@@ -11,11 +11,11 @@ export class Product implements ProductInterface {
   private _status: string
   private _price: number
 
-  constructor(id: string, name: string, price: number) {
+  constructor(id: string, name: string, price: number, status?: string) {
     this._id = id
     this._name = name
     this._price = price
-    this._status = STATUS.DISABLED
+    this._status = status ?? STATUS.DISABLED
     this.isValid()
   }
 

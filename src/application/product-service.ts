@@ -14,7 +14,7 @@ export class ProductService implements ProductServiceInterface {
       throw new Error('Product not found')
     }
 
-    return new Product(product.id, product.name, product.price)
+    return product
   }
 
   async create(
