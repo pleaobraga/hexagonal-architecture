@@ -7,7 +7,7 @@
     "dev": "tsx watch --env-file .env src/server.ts",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
-    "seed": "tsx --env-file .env src/db/seed.ts",
+    "seed": "tsx --env-file .env src/adapters/db/drizzle/seed.ts",
     "generate:migration": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
     "test": "jest",
