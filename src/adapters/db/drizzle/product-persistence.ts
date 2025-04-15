@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm'
 
-import { schema } from './db'
+import * as schema from './schema'
+
 import {
   ProductInterface,
   ProductPersistenceInterface

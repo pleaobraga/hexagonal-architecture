@@ -10,5 +10,3 @@ export const client = new Pool({
 })
 
 export const db = drizzle(client, { schema, logger: env.ENV === 'dev' })
-
-export { schema }
