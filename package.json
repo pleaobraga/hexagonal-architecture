@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "dev": "tsx watch --env-file .env src/server.ts",
+    "dev": "tsx watch --env-file .env src/adapters/web/server/server.ts",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
     "seed": "tsx --env-file .env src/adapters/db/drizzle/seed.ts",
