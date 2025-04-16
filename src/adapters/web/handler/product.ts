@@ -39,10 +39,6 @@ export const getProductHandle: FastifyPluginAsyncZod = async (app) => {
 
         const product = await productService.get(id)
 
-        if (!product) {
-          return reply.status(404).send({ error: 'Product not found' })
-        }
-
         return reply.status(201).send({ product })
       } catch (e: any) {
         return reply.status(500).send({ error: e })
